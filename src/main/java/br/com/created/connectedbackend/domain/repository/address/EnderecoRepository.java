@@ -8,5 +8,4 @@ import java.util.UUID;
 
 @Repository
 public interface EnderecoRepository extends JpaRepository<Endereco, UUID> {
-    // Adicione os métodos de consulta e manipulação de endereços, se necessário
 }

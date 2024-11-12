@@ -4,50 +4,21 @@ import br.com.created.connectedbackend.api.dto.request.address.CreateEnderecoReq
 import br.com.created.connectedbackend.api.dto.request.address.UpdateEnderecoRequest;
 import br.com.created.connectedbackend.api.dto.response.address.EnderecoResponse;
 import br.com.created.connectedbackend.domain.model.address.Endereco;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Component
-public class EnderecoMapper {
+@Mapper(componentModel = "spring")
+public interface EnderecoMapper {
 
-    public Endereco toEndereco(CreateEnderecoRequest request) {
-        return Endereco.builder()
-                .cep(request.getCep())
-                .logradouro(request.getLogradouro())
-                .numero(request.getNumero())
-                .complemento(request.getComplemento())
-                .bairro(request.getBairro())
-                .cidade(request.getCidade())
-                .estado(request.getEstado())
-                .pais(request.getPais())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    Endereco toEndereco(CreateEnderecoRequest request);
 
-    public Endereco toEndereco(UpdateEnderecoRequest request) {
-        return Endereco.builder()
-                .cep(request.getCep())
-                .logradouro(request.getLogradouro())
-                .numero(request.getNumero())
-                .complemento(request.getComplemento())
-                .bairro(request.getBairro())
-                .cidade(request.getCidade())
-                .estado(request.getEstado())
-                .pais(request.getPais())
-                .build();
-    }
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updateEnderecoFromRequest(UpdateEnderecoRequest request, @MappingTarget Endereco endereco);
 
-    public EnderecoResponse toEnderecoResponse(Endereco endereco) {
-        return EnderecoResponse.builder()
-                .id(endereco.getId())
-                .cep(endereco.getCep())
-                .logradouro(endereco.getLogradouro())
-                .numero(endereco.getNumero())
-                .complemento(endereco.getComplemento())
-                .bairro(endereco.getBairro())
-                .cidade(endereco.getCidade())
-                .estado(endereco.getEstado())
-                .pais(endereco.getPais())
-                .createdAt(endereco.getCreatedAt())
-                .updatedAt(endereco.getUpdatedAt())
-                .build();
-    }
+    EnderecoResponse toEnderecoResponse(Endereco endereco);
 }

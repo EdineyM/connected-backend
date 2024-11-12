@@ -3,17 +3,16 @@ package br.com.created.connectedbackend.api.controller.core;
 import br.com.created.connectedbackend.api.dto.request.core.CreateEmpresaRequest;
 import br.com.created.connectedbackend.api.dto.request.core.UpdateEmpresaRequest;
 import br.com.created.connectedbackend.api.dto.response.core.EmpresaResponse;
-import br.com.created.connectedbackend.domain.model.core.Empresa;
 import br.com.created.connectedbackend.domain.service.core.EmpresaService;
 import br.com.created.connectedbackend.infrastructure.config.mapper.EmpresaMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -27,10 +26,9 @@ public class EmpresaController {
 
     @PostMapping
     @Operation(summary = "Criar nova empresa")
-    public ResponseEntity<EmpresaResponse> createEmpresa(
-            @Valid @RequestBody CreateEmpresaRequest request) {
-        Empresa empresa = empresaMapper.toEmpresa(request);
-        Empresa savedEmpresa = empresaService.createEmpresa(empresa);
+    public ResponseEntity<EmpresaResponse> createEmpresa(@Valid @RequestBody CreateEmpresaRequest request) {
+        var empresa = empresaMapper.toEmpresa(request);
+        var savedEmpresa = empresaService.createEmpresa(empresa);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(empresaMapper.toEmpresaResponse(savedEmpresa));
     }
@@ -40,24 +38,23 @@ public class EmpresaController {
     public ResponseEntity<EmpresaResponse> updateEmpresa(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateEmpresaRequest request) {
-        Empresa empresa = empresaMapper.toEmpresa(request);
-        empresa.setId(id);
-        Empresa updatedEmpresa = empresaService.updateEmpresa(empresa);
+        var empresa = empresaService.findById(id);
+        empresaMapper.updateEmpresaFromRequest(request, empresa);
+        var updatedEmpresa = empresaService.updateEmpresa(empresa);
         return ResponseEntity.ok(empresaMapper.toEmpresaResponse(updatedEmpresa));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar empresa por ID")
     public ResponseEntity<EmpresaResponse> getEmpresaById(@PathVariable UUID id) {
-        Empresa empresa = empresaService.findEmpresaById(id);
+        var empresa = empresaService.findById(id);
         return ResponseEntity.ok(empresaMapper.toEmpresaResponse(empresa));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar empresa")
     public ResponseEntity<Void> deleteEmpresa(@PathVariable UUID id) {
-        Empresa empresa = empresaService.findEmpresaById(id);
-        empresaService.deleteEmpresa(empresa);
+        empresaService.deleteEmpresa(id);
         return ResponseEntity.noContent().build();
     }
 }

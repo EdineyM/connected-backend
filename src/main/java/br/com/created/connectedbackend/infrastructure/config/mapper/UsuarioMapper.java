@@ -3,70 +3,25 @@ package br.com.created.connectedbackend.infrastructure.config.mapper;
 import br.com.created.connectedbackend.api.dto.request.core.CreateUsuarioRequest;
 import br.com.created.connectedbackend.api.dto.request.core.UpdateUsuarioRequest;
 import br.com.created.connectedbackend.api.dto.response.core.UsuarioResponse;
-import br.com.created.connectedbackend.domain.model.core.Empresa;
 import br.com.created.connectedbackend.domain.model.core.Usuario;
-import br.com.created.connectedbackend.domain.model.ref.UsuarioTipo;
-import br.com.created.connectedbackend.domain.service.address.EnderecoService;
-import br.com.created.connectedbackend.domain.service.core.EmpresaService;
-import br.com.created.connectedbackend.domain.service.ref.UsuarioTipoService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Component
-@RequiredArgsConstructor
-public class UsuarioMapper {
+@Mapper(componentModel = "spring", uses = {EmpresaMapper.class, EnderecoMapper.class})
+public interface UsuarioMapper {
 
-    private final EnderecoService enderecoService;
-    private final EmpresaService empresaService;
-    private final UsuarioTipoService usuarioTipoService;
-    private final EmpresaMapper empresaMapper;
-    private final EnderecoMapper enderecoMapper;
-    private final UsuarioTipoMapper usuarioTipoMapper;
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "senhaSalt", ignore = true)
+    Usuario toUsuario(CreateUsuarioRequest request);
 
-    public Usuario toUsuario(CreateUsuarioRequest request) {
-        return Usuario.builder()
-                .nome(request.getNome())
-                .email(request.getEmail())
-                .senhaHash(request.getSenhaHash())
-                .telefone(request.getTelefone())
-                .tipo(usuarioTipoService.findById(request.getTipoId()).orElse(null))
-                .empresa(empresaService.findById(request.getEmpresaId()).orElse(null))
-                .endereco(enderecoService.findById(request.getEnderecoId()).orElse(null))
-                .fotoUrl(request.getFotoUrl())
-                .bio(request.getBio())
-                .build();
-    }
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    void updateUsuarioFromRequest(UpdateUsuarioRequest request, @MappingTarget Usuario usuario);
 
-    public Usuario toUsuario(UpdateUsuarioRequest request) {
-        return Usuario.builder()
-                .nome(request.getNome())
-                .email(request.getEmail())
-                .senhaHash(request.getSenhaHash())
-                .telefone(request.getTelefone())
-                .tipo(usuarioTipoService.findById(request.getTipoId()).orElse(null))
-                .empresa(empresaService.findById(request.getEmpresaId()).orElse(null))
-                .endereco(enderecoService.findById(request.getEnderecoId()).orElse(null))
-                .fotoUrl(request.getFotoUrl())
-                .bio(request.getBio())
-                .build();
-    }
-
-    public UsuarioResponse toUsuarioResponse(Usuario usuario) {
-        Empresa empresa = usuario.getEmpresa();
-        return UsuarioResponse.builder()
-                .id(usuario.getId())
-                .nome(usuario.getNome())
-                .email(usuario.getEmail())
-                .telefone(usuario.getTelefone())
-                .tipo(usuarioTipoMapper.toUsuarioTipoResponse(usuario.getTipo()))
-                .empresa(empresaMapper.toEmpresaResponse(empresa))
-                .endereco(enderecoMapper.toEnderecoResponse(usuario.getEndereco()))
-                .fotoUrl(usuario.getFotoUrl())
-                .bio(usuario.getBio())
-                .ativo(usuario.getAtivo())
-                .createdAt(usuario.getCreatedAt())
-                .updatedAt(usuario.getUpdatedAt())
-                .deletedAt(usuario.getDeletedAt())
-                .build();
-    }
+    UsuarioResponse toUsuarioResponse(Usuario usuario);
 }

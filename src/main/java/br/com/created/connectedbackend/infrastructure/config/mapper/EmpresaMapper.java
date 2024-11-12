@@ -4,49 +4,23 @@ import br.com.created.connectedbackend.api.dto.request.core.CreateEmpresaRequest
 import br.com.created.connectedbackend.api.dto.request.core.UpdateEmpresaRequest;
 import br.com.created.connectedbackend.api.dto.response.core.EmpresaResponse;
 import br.com.created.connectedbackend.domain.model.core.Empresa;
-import br.com.created.connectedbackend.domain.service.address.EnderecoService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Component
-@RequiredArgsConstructor
-public class EmpresaMapper {
+@Mapper(componentModel = "spring")
+public interface EmpresaMapper {
 
-    private final EnderecoService enderecoService;
-    private final EnderecoMapper enderecoMapper;
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    Empresa toEmpresa(CreateEmpresaRequest request);
 
-    public Empresa toEmpresa(CreateEmpresaRequest request) {
-        return Empresa.builder()
-                .razaoSocial(request.getRazaoSocial())
-                .nomeFantasia(request.getNomeFantasia())
-                .cnpj(request.getCnpj())
-                .telefone(request.getTelefone())
-                .endereco(enderecoService.findById(request.getEnderecoId()).orElse(null))
-                .build();
-    }
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
+    void updateEmpresaFromRequest(UpdateEmpresaRequest request, @MappingTarget Empresa empresa);
 
-    public Empresa toEmpresa(UpdateEmpresaRequest request) {
-        return Empresa.builder()
-                .razaoSocial(request.getRazaoSocial())
-                .nomeFantasia(request.getNomeFantasia())
-                .cnpj(request.getCnpj())
-                .telefone(request.getTelefone())
-                .endereco(enderecoService.findById(request.getEnderecoId()).orElse(null))
-                .build();
-    }
-
-    public EmpresaResponse toEmpresaResponse(Empresa empresa) {
-        return EmpresaResponse.builder()
-                .id(empresa.getId())
-                .razaoSocial(empresa.getRazaoSocial())
-                .nomeFantasia(empresa.getNomeFantasia())
-                .cnpj(empresa.getCnpj())
-                .telefone(empresa.getTelefone())
-                .endereco(enderecoMapper.toEnderecoResponse(empresa.getEndereco()))
-                .createdAt(empresa.getCreatedAt())
-                .updatedAt(empresa.getUpdatedAt())
-                .deletedAt(empresa.getDeletedAt())
-                .ativo(empresa.getAtivo())
-                .build();
-    }
+    EmpresaResponse toEmpresaResponse(Empresa empresa);
 }
